@@ -1,11 +1,59 @@
 import SwiftUI
 
+extension Font {
+    static func poppins(_ style: Font.TextStyle, weight: Font.Weight = .regular) -> Font {
+        let name: String
+        switch weight {
+        case .bold: name = "Poppins-Bold"
+        case .semibold: name = "Poppins-SemiBold"
+        case .medium: name = "Poppins-Medium"
+        default: name = "Poppins-Regular"
+        }
+        let size: CGFloat
+        switch style {
+        case .largeTitle: size = 34
+        case .title: size = 28
+        case .title2: size = 22
+        case .title3: size = 20
+        case .headline: size = 17
+        case .body: size = 17
+        case .callout: size = 16
+        case .subheadline: size = 15
+        case .footnote: size = 13
+        case .caption: size = 12
+        case .caption2: size = 11
+        default: size = 16
+        }
+        return .custom(name, size: size, relativeTo: style)
+    }
+
+    static func poppins(size: CGFloat, weight: Font.Weight = .regular) -> Font {
+        let name: String
+        switch weight {
+        case .bold: name = "Poppins-Bold"
+        case .semibold: name = "Poppins-SemiBold"
+        case .medium: name = "Poppins-Medium"
+        default: name = "Poppins-Regular"
+        }
+        return .custom(name, size: size)
+    }
+}
+
+extension ExpenseCategory {
+    var displayColor: Color {
+        let colors: [Color] = [.blue, .purple, .orange, .pink, .indigo, .teal, .cyan, .green, .mint, .brown, .red, .yellow]
+        let index = abs(id.hashValue) % colors.count
+        return colors[index]
+    }
+}
+
+
 /// Shared visual tokens for the premium, neutral expense interface.
 enum AppTheme {
     static let pagePadding: CGFloat = 20
     static let sectionSpacing: CGFloat = 24
-    static let cardRadius: CGFloat = 22
-    static let compactRadius: CGFloat = 17
+    static let cardRadius: CGFloat = 14
+    static let compactRadius: CGFloat = 11
     static let floatingBarClearance: CGFloat = 92
 
     static let background = Color(red: 0.965, green: 0.965, blue: 0.985)
@@ -68,23 +116,16 @@ struct AdaptivePairView<Leading: View, Trailing: View>: View {
 /// A compact, left-aligned screen title matching the supplied dashboard references.
 struct ScreenTitleView: View {
     let title: String
-    let subtitle: String?
 
-    /// Creates a title with optional supporting context.
-    init(_ title: String, subtitle: String? = nil) {
+    /// Creates a title.
+    init(_ title: String) {
         self.title = title
-        self.subtitle = subtitle
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 5) {
             Text(title)
-                .font(.system(.largeTitle, design: .rounded, weight: .bold))
-            if let subtitle {
-                Text(subtitle)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-            }
+                .font(.poppins(.title, weight: .bold))
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -93,23 +134,16 @@ struct ScreenTitleView: View {
 /// A consistent heading and supporting label for dashboard sections.
 struct DashboardSectionHeader: View {
     let title: String
-    let subtitle: String?
 
-    /// Creates a section heading with optional explanatory text.
-    init(_ title: String, subtitle: String? = nil) {
+    /// Creates a section heading.
+    init(_ title: String) {
         self.title = title
-        self.subtitle = subtitle
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 3) {
             Text(title)
-                .font(.title3.weight(.bold))
-            if let subtitle {
-                Text(subtitle)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-            }
+                .font(.poppins(.headline, weight: .bold))
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -124,10 +158,10 @@ struct CategoryIconView: View {
     var body: some View {
         Image(systemName: category.symbol)
             .font(.system(size: size * 0.32, weight: .semibold))
-            .foregroundStyle(selected ? Color.white : Color.primary)
+            .foregroundStyle(selected ? Color.white : category.displayColor)
             .frame(width: size, height: size)
             .background(
-                selected ? Color.black : AppTheme.subtleFill,
+                selected ? category.displayColor : category.displayColor.opacity(0.15),
                 in: RoundedRectangle(cornerRadius: size * 0.28, style: .continuous)
             )
             .accessibilityHidden(true)
@@ -145,22 +179,22 @@ struct ExpenseRowView: View {
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(amountText)
-                    .font(.headline.weight(.bold))
+                    .font(.poppins(.headline, weight: .bold))
                     .lineLimit(1)
                     .minimumScaleFactor(0.72)
                 Text(transaction.category.name)
-                    .font(.subheadline)
+                    .font(.poppins(.subheadline))
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
-                Text(transaction.date, format: .dateTime.hour().minute())
-                    .font(.caption)
+                Text(transaction.date, format: .dateTime.day().month(.abbreviated).hour().minute())
+                    .font(.poppins(.caption))
                     .foregroundStyle(.tertiary)
             }
 
             Spacer(minLength: 8)
 
             Image(systemName: "chevron.right")
-                .font(.system(size: 12, weight: .bold))
+                .font(.poppins(size: 12, weight: .bold))
                 .foregroundStyle(.tertiary)
         }
         .padding(16)
@@ -171,71 +205,51 @@ struct ExpenseRowView: View {
     }
 }
 
-/// A red layered-gradient card emphasizing total spend for the selected date.
+/// A modern card emphasizing total spend for the selected date.
 struct DailyExpenseTotalCard: View {
     let amountText: String
     let date: Date
 
     var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 28, style: .continuous)
+        VStack(alignment: .leading, spacing: 12) {
+            Label("Total spent", systemImage: "arrow.down.right")
+                .font(.poppins(.subheadline, weight: .semibold))
+                .foregroundStyle(.secondary)
+
+            Text(amountText)
+                .font(.poppins(.largeTitle, weight: .bold))
+                .minimumScaleFactor(0.62)
+                .lineLimit(1)
+
+            Text(date, format: .dateTime.weekday(.wide).day().month(.wide))
+                .font(.poppins(.caption))
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(22)
+        .background {
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .fill(Color.white)
+            
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
                 .fill(
                     LinearGradient(
                         colors: [
-                            Color(red: 0.99, green: 0.89, blue: 0.90),
-                            Color(red: 0.98, green: 0.95, blue: 0.96),
-                            Color(red: 0.96, green: 0.80, blue: 0.83)
+                            Color.purple.opacity(0.12),
+                            Color.blue.opacity(0.06),
+                            Color.clear
                         ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     )
                 )
-
-            Circle()
-                .fill(AppTheme.expenseRed.opacity(0.24))
-                .frame(width: 150, height: 150)
-                .blur(radius: 28)
-                .offset(x: 145, y: -70)
-
-            Circle()
-                .fill(Color.pink.opacity(0.20))
-                .frame(width: 130, height: 130)
-                .blur(radius: 28)
-                .offset(x: -150, y: 78)
-
-            HStack(alignment: .center, spacing: 16) {
-                VStack(alignment: .leading, spacing: 7) {
-                    Label("Total spent", systemImage: "arrow.down.right")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(AppTheme.expenseRed)
-
-                    Text(amountText)
-                        .font(.system(.largeTitle, design: .rounded, weight: .bold))
-                        .minimumScaleFactor(0.62)
-                        .lineLimit(1)
-
-                    Text(date, format: .dateTime.weekday(.wide).day().month(.wide))
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-
-                Spacer(minLength: 0)
-
-                Image(systemName: "creditcard.fill")
-                    .font(.system(size: 19, weight: .semibold))
-                    .foregroundStyle(AppTheme.expenseRed)
-                    .frame(width: 52, height: 52)
-                    .background(Color.white.opacity(0.68), in: Circle())
-            }
-            .padding(22)
         }
-        .frame(minHeight: 146)
-        .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
         .overlay {
-            RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .stroke(Color.white.opacity(0.7), lineWidth: 1)
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .stroke(AppTheme.border, lineWidth: 1)
         }
-        .shadow(color: AppTheme.expenseRed.opacity(0.12), radius: 18, x: 0, y: 9)
+        .shadow(color: Color.black.opacity(0.05), radius: 18, x: 0, y: 9)
         .accessibilityElement(children: .combine)
     }
 }
@@ -251,26 +265,26 @@ struct StatCardView: View {
         VStack(alignment: .leading, spacing: 15) {
             HStack(spacing: 8) {
                 Image(systemName: symbol)
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(.poppins(size: 13, weight: .semibold))
                     .frame(width: 32, height: 32)
                     .background(AppTheme.subtleFill, in: Circle())
 
                 Spacer(minLength: 4)
 
                 Text(detail)
-                    .font(.caption2.weight(.medium))
+                    .font(.poppins(.caption2, weight: .medium))
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
             }
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(value)
-                    .font(.title3.weight(.bold))
+                    .font(.poppins(.title3, weight: .bold))
                     .contentTransition(.numericText())
                     .minimumScaleFactor(0.62)
                     .lineLimit(1)
                 Text(title)
-                    .font(.caption)
+                    .font(.poppins(.caption))
                     .foregroundStyle(.secondary)
                     .lineLimit(2)
             }
@@ -294,7 +308,7 @@ struct CategoryPerformanceRowView: View {
                 CategoryIconView(category: performance.category, size: 42)
                 if let rank {
                     Text("\(rank)")
-                        .font(.system(size: 9, weight: .bold))
+                        .font(.poppins(size: 9, weight: .bold))
                         .foregroundStyle(.white)
                         .frame(width: 18, height: 18)
                         .background(Color.black, in: Circle())
@@ -304,16 +318,16 @@ struct CategoryPerformanceRowView: View {
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(performance.category.name)
-                    .font(.subheadline.weight(.semibold))
+                    .font(.poppins(.subheadline, weight: .semibold))
                 Text("\(performance.expenseCount) \(performance.expenseCount == 1 ? "spend" : "spends")")
-                    .font(.caption)
+                    .font(.poppins(.caption))
                     .foregroundStyle(.secondary)
             }
 
             Spacer(minLength: 8)
 
             Text(amountText)
-                .font(.subheadline.weight(.bold))
+                .font(.poppins(.subheadline, weight: .bold))
                 .lineLimit(1)
                 .minimumScaleFactor(0.68)
         }
@@ -333,15 +347,15 @@ struct PeakSpendCardView: View {
     var body: some View {
         HStack(spacing: 14) {
             Image(systemName: symbol)
-                .font(.system(size: 15, weight: .semibold))
+                .font(.poppins(size: 15, weight: .semibold))
                 .frame(width: 42, height: 42)
                 .background(AppTheme.subtleFill, in: RoundedRectangle(cornerRadius: 13, style: .continuous))
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
-                    .font(.subheadline.weight(.semibold))
+                    .font(.poppins(.subheadline, weight: .semibold))
                 Text(record.periodLabel)
-                    .font(.caption)
+                    .font(.poppins(.caption))
                     .foregroundStyle(.secondary)
                     .lineLimit(2)
             }
@@ -350,11 +364,11 @@ struct PeakSpendCardView: View {
 
             VStack(alignment: .trailing, spacing: 4) {
                 Text(amountText)
-                    .font(.subheadline.weight(.bold))
+                    .font(.poppins(.subheadline, weight: .bold))
                     .lineLimit(1)
                     .minimumScaleFactor(0.68)
                 Text("\(record.expenseCount) \(record.expenseCount == 1 ? "spend" : "spends")")
-                    .font(.caption2)
+                    .font(.poppins(.caption2))
                     .foregroundStyle(.secondary)
             }
         }
@@ -374,9 +388,9 @@ struct MetricPairCardView: View {
         HStack(spacing: 18) {
             VStack(alignment: .leading, spacing: 5) {
                 Text(count.formatted())
-                    .font(.title2.weight(.bold))
+                    .font(.poppins(.title2, weight: .bold))
                 Text(count == 1 ? "Expense" : "Expenses")
-                    .font(.caption)
+                    .font(.poppins(.caption))
                     .foregroundStyle(.secondary)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -387,11 +401,11 @@ struct MetricPairCardView: View {
 
             VStack(alignment: .leading, spacing: 5) {
                 Text(amountText)
-                    .font(.title2.weight(.bold))
+                    .font(.poppins(.title2, weight: .bold))
                     .minimumScaleFactor(0.62)
                     .lineLimit(1)
                 Text(amountTitle)
-                    .font(.caption)
+                    .font(.poppins(.caption))
                     .foregroundStyle(.secondary)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -413,16 +427,16 @@ struct EmptyStateView: View {
     var body: some View {
         VStack(spacing: 12) {
             Image(systemName: symbol)
-                .font(.system(size: 21, weight: .medium))
+                .font(.poppins(size: 21, weight: .medium))
                 .foregroundStyle(.secondary)
                 .frame(width: 50, height: 50)
                 .background(AppTheme.subtleFill, in: Circle())
 
             VStack(spacing: 5) {
                 Text(title)
-                    .font(.headline)
+                    .font(.poppins(.headline))
                 Text(message)
-                    .font(.subheadline)
+                    .font(.poppins(.subheadline))
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
@@ -430,7 +444,7 @@ struct EmptyStateView: View {
 
             if let actionTitle, let action {
                 Button(actionTitle, action: action)
-                    .font(.subheadline.weight(.semibold))
+                    .font(.poppins(.subheadline, weight: .semibold))
                     .foregroundStyle(.white)
                     .frame(minWidth: 110, minHeight: 44)
                     .background(Color.black, in: Capsule())
@@ -451,12 +465,12 @@ struct SheetHeaderView: View {
     var body: some View {
         HStack(alignment: .center, spacing: 12) {
             Text(title)
-                .font(.title2.weight(.bold))
+                .font(.poppins(.title2, weight: .bold))
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             Button(action: dismiss) {
                 Image(systemName: "xmark")
-                    .font(.system(size: 13, weight: .bold))
+                    .font(.poppins(size: 13, weight: .bold))
                     .foregroundStyle(.secondary)
                     .frame(width: 44, height: 44)
                     .background(AppTheme.subtleFill, in: Circle())

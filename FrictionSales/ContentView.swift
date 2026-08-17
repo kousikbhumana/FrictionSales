@@ -21,7 +21,6 @@ struct ContentView: View {
                 ProfileTabView()
             }
         }
-        .fontDesign(.rounded)
         .tint(.black)
         .safeAreaInset(edge: .bottom, spacing: 0) {
             FloatingExpenseTabBar(
@@ -78,7 +77,7 @@ private struct FloatingExpenseTabBar: View {
 
             Button(action: addAction) {
                 Image(systemName: "plus")
-                    .font(.system(size: 19, weight: .bold))
+                    .font(.poppins(size: 19, weight: .bold))
                     .foregroundStyle(.black)
                     .frame(maxWidth: .infinity)
                     .frame(height: 48)
@@ -108,7 +107,7 @@ private struct FloatingExpenseTabBar: View {
             }
         } label: {
             Image(systemName: tab.symbol)
-                .font(.system(size: 15, weight: .semibold))
+                .font(.poppins(size: 15, weight: .semibold))
                 .symbolRenderingMode(.monochrome)
                 .foregroundStyle(selection == tab ? Color.white : Color.white.opacity(0.48))
                 .frame(maxWidth: .infinity)

@@ -18,10 +18,10 @@ struct TodayTabView: View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: AppTheme.sectionSpacing) {
                 HStack(alignment: .center, spacing: 14) {
-                    ScreenTitleView("Today", subtitle: "Everyday spending, clearly tracked")
+                    ScreenTitleView("Today")
 
                     Text(selectedDate, format: .dateTime.day().month(.abbreviated))
-                        .font(.subheadline.weight(.semibold))
+                        .font(.poppins(.subheadline, weight: .semibold))
                         .foregroundStyle(.secondary)
                         .padding(.horizontal, 14)
                         .frame(minHeight: 42)
@@ -36,10 +36,7 @@ struct TodayTabView: View {
                 )
 
                 VStack(alignment: .leading, spacing: 13) {
-                    DashboardSectionHeader(
-                        "Expenses",
-                        subtitle: "\(selectedExpenses.count) \(selectedExpenses.count == 1 ? "spend" : "spends")"
-                    )
+                    DashboardSectionHeader("Expenses")
 
                     if selectedExpenses.isEmpty {
                         EmptyStateView(
@@ -63,7 +60,7 @@ struct TodayTabView: View {
                 }
             }
             .padding(.horizontal, AppTheme.pagePadding)
-            .padding(.top, 18)
+            .padding(.top, 4)
             .padding(.bottom, AppTheme.floatingBarClearance)
         }
         .scrollIndicators(.hidden)
@@ -106,7 +103,7 @@ private struct WeekDateStrip: View {
                             .minimumScaleFactor(0.75)
 
                         Text(date, format: .dateTime.day())
-                            .font(.subheadline.weight(.semibold))
+                            .font(.poppins(.subheadline, weight: .semibold))
                             .frame(width: 38, height: 38)
                             .background(isSelected ? AppTheme.subtleFill : Color.clear, in: RoundedRectangle(cornerRadius: 12))
                     }
@@ -188,12 +185,12 @@ struct AddExpenseSheet: View {
 
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Amount spent")
-                        .font(.caption.weight(.semibold))
+                        .font(.poppins(.caption, weight: .semibold))
                         .foregroundStyle(.secondary)
 
                     HStack(alignment: .firstTextBaseline, spacing: 9) {
                         Text(manager.selectedCurrency.symbol)
-                            .font(.title2.weight(.semibold))
+                            .font(.poppins(.title2, weight: .semibold))
                             .foregroundStyle(.secondary)
 
                         TextField(
@@ -201,7 +198,7 @@ struct AddExpenseSheet: View {
                             value: $amount,
                             format: .number.precision(.fractionLength(0...2))
                         )
-                        .font(.system(size: 40, weight: .bold, design: .rounded))
+                        .font(.poppins(size: 32, weight: .bold))
                         .keyboardType(.decimalPad)
                         .focused($focusedField, equals: .amount)
                         .minimumScaleFactor(0.65)
@@ -212,7 +209,7 @@ struct AddExpenseSheet: View {
                 }
 
                 VStack(alignment: .leading, spacing: 12) {
-                    DashboardSectionHeader("Category", subtitle: "Choose what this spend was for")
+                    DashboardSectionHeader("Category")
 
                     ScrollView(.horizontal) {
                         HStack(spacing: 10) {
@@ -246,7 +243,7 @@ struct AddExpenseSheet: View {
                     HStack(spacing: 13) {
                         formIcon("calendar")
                         Text("Date")
-                            .font(.subheadline.weight(.medium))
+                            .font(.poppins(.subheadline, weight: .medium))
                         Spacer()
                         DatePicker(
                             "Date",
@@ -263,7 +260,7 @@ struct AddExpenseSheet: View {
                     HStack(spacing: 13) {
                         formIcon("clock")
                         Text("Time")
-                            .font(.subheadline.weight(.medium))
+                            .font(.poppins(.subheadline, weight: .medium))
                         Spacer()
                         DatePicker(
                             "Time",
@@ -281,25 +278,25 @@ struct AddExpenseSheet: View {
                 VStack(alignment: .leading, spacing: 9) {
                     HStack {
                         Text("Note")
-                            .font(.caption.weight(.semibold))
+                            .font(.poppins(.caption, weight: .semibold))
                             .foregroundStyle(.secondary)
                         Spacer()
                         Text("\(note.count)/240")
-                            .font(.caption2)
+                            .font(.poppins(.caption2))
                             .foregroundStyle(.tertiary)
                     }
 
                     ZStack(alignment: .topLeading) {
                         if note.isEmpty {
                             Text("What was this expense for?")
-                                .font(.subheadline)
+                                .font(.poppins(.subheadline))
                                 .foregroundStyle(.tertiary)
                                 .padding(.horizontal, 4)
                                 .padding(.vertical, 8)
                         }
 
                         TextEditor(text: $note)
-                            .font(.subheadline)
+                            .font(.poppins(.subheadline))
                             .focused($focusedField, equals: .note)
                             .scrollContentBackground(.hidden)
                             .frame(minHeight: 92)
@@ -315,7 +312,7 @@ struct AddExpenseSheet: View {
 
                 Button(action: submitExpense) {
                     Text(submitTitle)
-                        .font(.headline)
+                        .font(.poppins(.headline))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .frame(height: 52)
@@ -329,9 +326,9 @@ struct AddExpenseSheet: View {
         .scrollDismissesKeyboard(.interactively)
         .scrollIndicators(.hidden)
         .background(AppTheme.background)
-        .presentationDetents([.large])
+        .presentationDetents([.medium, .large])
         .presentationDragIndicator(.hidden)
-        .presentationCornerRadius(34)
+        .presentationCornerRadius(22)
         .presentationBackground(AppTheme.background)
         .onAppear {
             if selectedCategoryID == nil {
@@ -343,7 +340,7 @@ struct AddExpenseSheet: View {
     /// Creates the leading SF Symbol shared by the date and time rows.
     private func formIcon(_ symbol: String) -> some View {
         Image(systemName: symbol)
-            .font(.system(size: 14, weight: .semibold))
+            .font(.poppins(size: 14, weight: .semibold))
             .foregroundStyle(.secondary)
             .frame(width: 28, height: 28)
             .background(AppTheme.subtleFill, in: RoundedRectangle(cornerRadius: 8))
@@ -398,11 +395,11 @@ struct ExpenseDetailsSheet: View {
                     CategoryIconView(category: displayedTransaction.category, size: 62)
                     VStack(alignment: .leading, spacing: 5) {
                         Text(manager.formattedCurrency(displayedTransaction.amount))
-                            .font(.system(.largeTitle, design: .rounded, weight: .bold))
+                            .font(.poppins(size: 32, weight: .bold))
                             .minimumScaleFactor(0.62)
                             .lineLimit(1)
                         Text(displayedTransaction.category.name)
-                            .font(.subheadline.weight(.medium))
+                            .font(.poppins(.subheadline, weight: .medium))
                             .foregroundStyle(.secondary)
                     }
                 }
@@ -434,10 +431,10 @@ struct ExpenseDetailsSheet: View {
 
                 VStack(alignment: .leading, spacing: 9) {
                     Text("Note")
-                        .font(.caption.weight(.semibold))
+                        .font(.poppins(.caption, weight: .semibold))
                         .foregroundStyle(.secondary)
                     Text(displayedTransaction.note.isEmpty ? "No note added" : displayedTransaction.note)
-                        .font(.subheadline)
+                        .font(.poppins(.subheadline))
                         .foregroundStyle(displayedTransaction.note.isEmpty ? .secondary : .primary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(16)
@@ -449,7 +446,7 @@ struct ExpenseDetailsSheet: View {
                         isPresentingEditor = true
                     } label: {
                         Label("Edit", systemImage: "pencil")
-                            .font(.headline)
+                            .font(.poppins(.headline))
                             .foregroundStyle(.white)
                             .frame(maxWidth: .infinity)
                             .frame(height: 50)
@@ -461,7 +458,7 @@ struct ExpenseDetailsSheet: View {
                         isConfirmingDeletion = true
                     } label: {
                         Label("Delete", systemImage: "trash")
-                            .font(.headline)
+                            .font(.poppins(.headline))
                             .foregroundStyle(AppTheme.expenseRed)
                             .frame(maxWidth: .infinity)
                             .frame(height: 50)
@@ -475,7 +472,7 @@ struct ExpenseDetailsSheet: View {
         .background(AppTheme.background)
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.hidden)
-        .presentationCornerRadius(34)
+        .presentationCornerRadius(22)
         .presentationBackground(AppTheme.background)
         .sheet(isPresented: $isPresentingEditor) {
             AddExpenseSheet(transaction: displayedTransaction)
@@ -506,14 +503,14 @@ private struct DetailRow: View {
     var body: some View {
         HStack(spacing: 13) {
             Image(systemName: symbol)
-                .font(.system(size: 13, weight: .semibold))
+                .font(.poppins(size: 13, weight: .semibold))
                 .foregroundStyle(.secondary)
                 .frame(width: 30)
             Text(title)
-                .font(.subheadline)
+                .font(.poppins(.subheadline))
             Spacer(minLength: 10)
             Text(value)
-                .font(.subheadline.weight(.medium))
+                .font(.poppins(.subheadline, weight: .medium))
                 .multilineTextAlignment(.trailing)
                 .foregroundStyle(.secondary)
         }

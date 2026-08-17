@@ -21,7 +21,7 @@ struct HistoryTabView: View {
     var body: some View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: AppTheme.sectionSpacing) {
-                ScreenTitleView("History", subtitle: "Transactions and category archive")
+                ScreenTitleView("History")
 
                 HistoryLineSwitcher(selection: $selectedPage)
 
@@ -34,7 +34,7 @@ struct HistoryTabView: View {
                 }
             }
             .padding(.horizontal, AppTheme.pagePadding)
-            .padding(.top, 18)
+            .padding(.top, 4)
             .padding(.bottom, AppTheme.floatingBarClearance)
         }
         .scrollDismissesKeyboard(.interactively)
@@ -52,16 +52,13 @@ struct HistoryTabView: View {
 
     private var transactionsContent: some View {
         VStack(alignment: .leading, spacing: 14) {
-            DashboardSectionHeader(
-                "Transactions",
-                subtitle: "\(searchedTransactions.count) \(searchedTransactions.count == 1 ? "record" : "records")"
-            )
+            DashboardSectionHeader("Spends")
 
             HStack(spacing: 10) {
                 Image(systemName: "magnifyingglass")
                     .foregroundStyle(.secondary)
                 TextField("Search category or note", text: $searchText)
-                    .font(.subheadline)
+                    .font(.poppins(.subheadline))
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled()
             }
@@ -87,10 +84,6 @@ struct HistoryTabView: View {
                                 transaction: transaction,
                                 amountText: manager.formattedCurrency(transaction.amount)
                             )
-                            Text(transaction.date, format: .dateTime.day().month(.abbreviated).year())
-                                .font(.caption2.weight(.medium))
-                                .foregroundStyle(.secondary)
-                                .padding(.leading, 8)
                         }
                     }
                     .buttonStyle(.plain)
@@ -101,10 +94,7 @@ struct HistoryTabView: View {
 
     private var categoriesContent: some View {
         VStack(alignment: .leading, spacing: 14) {
-            DashboardSectionHeader(
-                "Category history",
-                subtitle: "Lifetime expense count and total spent"
-            )
+            DashboardSectionHeader("Category history")
 
             if categoryHistory.isEmpty {
                 EmptyStateView(
@@ -131,7 +121,7 @@ struct HistoryTabView: View {
 
 /// The two text-and-underline pages used by History.
 private enum HistoryPage: String, CaseIterable, Identifiable {
-    case transactions = "Transactions"
+    case transactions = "Spends"
     case categories = "Categories"
 
     var id: Self { self }
@@ -143,7 +133,7 @@ private struct HistoryLineSwitcher: View {
     @Namespace private var underlineNamespace
 
     var body: some View {
-        HStack(alignment: .bottom, spacing: 34) {
+        HStack(alignment: .bottom, spacing: 28) {
             ForEach(HistoryPage.allCases) { page in
                 Button {
                     withAnimation(.snappy(duration: 0.22)) {
@@ -152,7 +142,7 @@ private struct HistoryLineSwitcher: View {
                 } label: {
                     VStack(spacing: 11) {
                         Text(page.rawValue)
-                            .font(.headline.weight(selection == page ? .semibold : .regular))
+                            .font(.poppins(.subheadline, weight: selection == page ? .semibold : .regular))
                             .foregroundStyle(selection == page ? .primary : .secondary)
 
                         ZStack {
@@ -194,46 +184,23 @@ private struct CategoryHistoryCard: View {
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(summary.category.name)
-                        .font(.headline)
+                        .font(.poppins(.headline))
                         .lineLimit(1)
-                    Text("View monthly spending")
-                        .font(.subheadline)
+                    
+                    Text("Total Spent: \(amountText)")
+                        .font(.poppins(.caption))
+                        .foregroundStyle(.secondary)
+                    
+                    Text("Total Expenses: \(summary.expenseCount)")
+                        .font(.poppins(.caption))
                         .foregroundStyle(.secondary)
                 }
 
                 Spacer(minLength: 8)
 
-                Image(systemName: "chevron.up.chevron.down")
-                    .font(.system(size: 11, weight: .bold))
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .bold))
                     .foregroundStyle(.tertiary)
-            }
-
-            Divider()
-
-            HStack(spacing: 18) {
-                VStack(alignment: .leading, spacing: 5) {
-                    Text(summary.expenseCount.formatted())
-                        .font(.title2.weight(.bold))
-                    Text("Expenses")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-
-                Rectangle()
-                    .fill(AppTheme.border)
-                    .frame(width: 1, height: 54)
-
-                VStack(alignment: .leading, spacing: 5) {
-                    Text(amountText)
-                        .font(.title2.weight(.bold))
-                        .minimumScaleFactor(0.62)
-                        .lineLimit(1)
-                    Text("Total spent")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
         .padding(18)
@@ -270,7 +237,7 @@ private struct CategoryDetailsSheet: View {
                         Spacer()
                         Text("Monthly spending")
                     }
-                    .font(.caption.weight(.semibold))
+                    .font(.poppins(.caption, weight: .semibold))
                     .foregroundStyle(.secondary)
                     .padding(.horizontal, 3)
 
@@ -286,9 +253,9 @@ private struct CategoryDetailsSheet: View {
         }
         .scrollIndicators(.hidden)
         .background(AppTheme.background)
-        .presentationDetents([.fraction(0.72), .large])
+        .presentationDetents([.medium, .large])
         .presentationDragIndicator(.hidden)
-        .presentationCornerRadius(34)
+        .presentationCornerRadius(22)
         .presentationBackground(AppTheme.background)
     }
 }
@@ -319,10 +286,10 @@ private struct MonthlySpendingRow: View {
             VStack(alignment: .leading, spacing: 5) {
                 HStack(spacing: 7) {
                     Text(month.monthStart, format: .dateTime.month(.wide).year())
-                        .font(.subheadline.weight(.semibold))
+                        .font(.poppins(.subheadline, weight: .semibold))
                     if let badge {
                         Text(badge)
-                            .font(.caption2.weight(.bold))
+                            .font(.poppins(.caption2, weight: .bold))
                             .foregroundStyle(accent)
                             .padding(.horizontal, 7)
                             .padding(.vertical, 4)
@@ -330,14 +297,14 @@ private struct MonthlySpendingRow: View {
                     }
                 }
                 Text("\(month.expenseCount) \(month.expenseCount == 1 ? "expense" : "expenses")")
-                    .font(.caption)
+                    .font(.poppins(.caption))
                     .foregroundStyle(.secondary)
             }
 
             Spacer(minLength: 8)
 
             Text(amountText)
-                .font(.subheadline.weight(.bold))
+                .font(.poppins(.subheadline, weight: .bold))
                 .foregroundStyle(month.position == .highest || month.position == .least ? accent : .primary)
                 .lineLimit(1)
                 .minimumScaleFactor(0.68)

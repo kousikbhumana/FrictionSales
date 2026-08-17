@@ -28,7 +28,7 @@ struct StatsTabView: View {
     var body: some View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: AppTheme.sectionSpacing) {
-                ScreenTitleView("Stats", subtitle: "Understand where your money goes")
+                ScreenTitleView("Stats")
 
                 StatsLineSwitcher(selection: $selectedPage)
 
@@ -45,7 +45,7 @@ struct StatsTabView: View {
                 }
             }
             .padding(.horizontal, AppTheme.pagePadding)
-            .padding(.top, 18)
+            .padding(.top, 4)
             .padding(.bottom, AppTheme.floatingBarClearance)
         }
         .scrollIndicators(.hidden)
@@ -60,7 +60,7 @@ struct StatsTabView: View {
     private var overviewContent: some View {
         Group {
             VStack(alignment: .leading, spacing: 13) {
-                DashboardSectionHeader("Overview", subtitle: "Lifetime spending at a glance")
+                DashboardSectionHeader("Overview")
 
                 StatCardView(
                     title: "Total spent",
@@ -95,7 +95,7 @@ struct StatsTabView: View {
 
             VStack(alignment: .leading, spacing: 13) {
                 HStack(alignment: .center, spacing: 12) {
-                    DashboardSectionHeader("Category-wise spending", subtitle: "All categories by total spent")
+                    DashboardSectionHeader("Category-wise spending")
                     Spacer(minLength: 8)
                     Button {
                         withAnimation(.snappy(duration: 0.22)) {
@@ -103,7 +103,7 @@ struct StatsTabView: View {
                         }
                     } label: {
                         Label(categorySort.buttonTitle, systemImage: "arrow.up.arrow.down")
-                            .font(.caption.weight(.semibold))
+                            .font(.poppins(.caption, weight: .semibold))
                             .foregroundStyle(.primary)
                             .padding(.horizontal, 11)
                             .frame(minHeight: 38)
@@ -137,7 +137,7 @@ struct StatsTabView: View {
     private var calendarContent: some View {
         Group {
             VStack(alignment: .leading, spacing: 13) {
-                DashboardSectionHeader("Explore a period", subtitle: "Compare a day, week, month, YTD, or custom range")
+                DashboardSectionHeader("Explore a period")
 
                 ExpensePeriodSwitcher(selection: $timeframe)
 
@@ -193,21 +193,21 @@ struct StatsTabView: View {
 
     private var proInsightsContent: some View {
         VStack(alignment: .leading, spacing: 14) {
-            DashboardSectionHeader("Insights", subtitle: "Personalized intelligence is coming with Pro")
+            DashboardSectionHeader("Insights")
 
             VStack(alignment: .leading, spacing: 22) {
                 Image(systemName: "sparkles")
-                    .font(.system(size: 22, weight: .semibold))
+                    .font(.poppins(size: 22, weight: .semibold))
                     .foregroundStyle(.black)
                     .frame(width: 52, height: 52)
                     .background(Color.white, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
 
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Unlock smarter spending insights")
-                        .font(.title2.weight(.bold))
+                        .font(.poppins(.title2, weight: .bold))
                         .foregroundStyle(.white)
                     Text("Discover patterns, forecasts, unusual spending, and personalized ways to stay on track.")
-                        .font(.subheadline)
+                        .font(.poppins(.subheadline))
                         .foregroundStyle(Color.white.opacity(0.68))
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -216,7 +216,7 @@ struct StatsTabView: View {
                     isShowingProMessage = true
                 } label: {
                     Text("Get Pro")
-                        .font(.headline)
+                        .font(.poppins(.headline))
                         .foregroundStyle(.black)
                         .frame(maxWidth: .infinity)
                         .frame(height: 50)
@@ -245,7 +245,7 @@ struct StatsTabView: View {
         showsRank: Bool
     ) -> some View {
         VStack(alignment: .leading, spacing: 13) {
-            DashboardSectionHeader(title, subtitle: subtitle)
+            DashboardSectionHeader(title)
 
             if performances.isEmpty {
                 EmptyStateView(
@@ -275,7 +275,7 @@ struct StatsTabView: View {
         ]
 
         return VStack(alignment: .leading, spacing: 13) {
-            DashboardSectionHeader("Peak periods", subtitle: "Your highest recorded spending windows")
+            DashboardSectionHeader("Peak periods")
 
             if manager.transactions.isEmpty {
                 EmptyStateView(
@@ -410,7 +410,7 @@ private struct CustomExpenseDateRangeView: View {
         HStack(spacing: 12) {
             VStack(alignment: .leading, spacing: 6) {
                 Text("From")
-                    .font(.caption2)
+                    .font(.poppins(.caption2))
                     .foregroundStyle(.secondary)
                 DatePicker("From", selection: $startDate, in: ...endDate, displayedComponents: .date)
                     .labelsHidden()
@@ -419,12 +419,12 @@ private struct CustomExpenseDateRangeView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
 
             Image(systemName: "arrow.right")
-                .font(.system(size: 11, weight: .semibold))
+                .font(.poppins(size: 11, weight: .semibold))
                 .foregroundStyle(.tertiary)
 
             VStack(alignment: .leading, spacing: 6) {
                 Text("To")
-                    .font(.caption2)
+                    .font(.poppins(.caption2))
                     .foregroundStyle(.secondary)
                 DatePicker("To", selection: $endDate, in: startDate...Date.now, displayedComponents: .date)
                     .labelsHidden()

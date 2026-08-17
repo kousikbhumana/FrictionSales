@@ -20,29 +20,29 @@ struct ProfileTabView: View {
     var body: some View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: AppTheme.sectionSpacing) {
-                ScreenTitleView("Profile", subtitle: "Personalize your expense workspace")
+                ScreenTitleView("Profile")
 
                 VStack(spacing: 18) {
                     Text(profileInitial.uppercased())
-                        .font(.system(size: 28, weight: .bold, design: .rounded))
+                        .font(.poppins(size: 28, weight: .bold))
                         .foregroundStyle(.white)
                         .frame(width: 72, height: 72)
                         .background(Color.black, in: Circle())
 
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Your name")
-                            .font(.caption.weight(.semibold))
+                            .font(.poppins(.caption, weight: .semibold))
                             .foregroundStyle(.secondary)
 
                         HStack(spacing: 10) {
                             TextField("Profile name", text: $draftName)
-                                .font(.headline)
+                                .font(.poppins(.headline))
                                 .textInputAutocapitalization(.words)
                                 .submitLabel(.done)
                                 .onSubmit(saveProfileName)
 
                             Button("Save", action: saveProfileName)
-                                .font(.caption.weight(.bold))
+                                .font(.poppins(.caption, weight: .bold))
                                 .foregroundStyle(canSaveName ? Color.white : Color.secondary)
                                 .padding(.horizontal, 13)
                                 .frame(minHeight: 38)
@@ -59,22 +59,22 @@ struct ProfileTabView: View {
                 .cardSurface()
 
                 VStack(alignment: .leading, spacing: 13) {
-                    DashboardSectionHeader("App settings", subtitle: "Applied across every expense and statistic")
+                    DashboardSectionHeader("App settings")
 
                     Button {
                         isPresentingCurrencyPicker = true
                     } label: {
                         HStack(spacing: 14) {
                             Text(manager.selectedCurrency.symbol)
-                                .font(.title3.weight(.bold))
+                                .font(.poppins(.title3, weight: .bold))
                                 .frame(width: 46, height: 46)
                                 .background(AppTheme.subtleFill, in: RoundedRectangle(cornerRadius: 13))
 
                             VStack(alignment: .leading, spacing: 3) {
                                 Text("Currency")
-                                    .font(.subheadline.weight(.semibold))
+                                    .font(.poppins(.subheadline, weight: .semibold))
                                 Text("\(manager.selectedCurrency.displayName) · \(manager.currencyCode)")
-                                    .font(.caption)
+                                    .font(.poppins(.caption))
                                     .foregroundStyle(.secondary)
                                     .lineLimit(1)
                             }
@@ -82,7 +82,7 @@ struct ProfileTabView: View {
                             Spacer(minLength: 8)
 
                             Image(systemName: "chevron.right")
-                                .font(.system(size: 12, weight: .bold))
+                                .font(.poppins(size: 12, weight: .bold))
                                 .foregroundStyle(.tertiary)
                         }
                         .padding(16)
@@ -95,16 +95,13 @@ struct ProfileTabView: View {
 
                 VStack(alignment: .leading, spacing: 13) {
                     HStack(alignment: .center, spacing: 12) {
-                        DashboardSectionHeader(
-                            "Categories",
-                            subtitle: "\(manager.categories.count) available categories"
-                        )
+                        DashboardSectionHeader("Categories")
                         Spacer(minLength: 8)
                         Button {
                             isPresentingNewCategory = true
                         } label: {
                             Image(systemName: "plus")
-                                .font(.system(size: 13, weight: .bold))
+                                .font(.poppins(size: 13, weight: .bold))
                                 .frame(width: 42, height: 42)
                                 .background(AppTheme.subtleFill, in: Circle())
                         }
@@ -124,13 +121,13 @@ struct ProfileTabView: View {
                     }
 
                     Text("Built-in categories stay available. Removing a custom category never deletes its existing expenses.")
-                        .font(.caption2)
+                        .font(.poppins(.caption2))
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }
             .padding(.horizontal, AppTheme.pagePadding)
-            .padding(.top, 18)
+            .padding(.top, 4)
             .padding(.bottom, AppTheme.floatingBarClearance)
         }
         .scrollDismissesKeyboard(.interactively)
@@ -187,7 +184,7 @@ private struct CategoryManagementTile: View {
                 if category.isCustom {
                     Button(action: deleteAction) {
                         Image(systemName: "minus")
-                            .font(.system(size: 8, weight: .bold))
+                            .font(.poppins(size: 8, weight: .bold))
                             .foregroundStyle(.white)
                             .frame(width: 18, height: 18)
                             .background(AppTheme.expenseRed, in: Circle())
@@ -198,7 +195,7 @@ private struct CategoryManagementTile: View {
             }
 
             Text(category.name)
-                .font(.caption.weight(.semibold))
+                .font(.poppins(.caption, weight: .semibold))
                 .lineLimit(1)
                 .minimumScaleFactor(0.75)
         }
@@ -233,7 +230,7 @@ private struct CurrencyPickerSheet: View {
                     Image(systemName: "magnifyingglass")
                         .foregroundStyle(.secondary)
                     TextField("Search name, code, or symbol", text: $searchText)
-                        .font(.subheadline)
+                        .font(.poppins(.subheadline))
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
                 }
@@ -248,16 +245,16 @@ private struct CurrencyPickerSheet: View {
                     } label: {
                         HStack(spacing: 14) {
                             Text(currency.symbol)
-                                .font(.headline)
+                                .font(.poppins(.headline))
                                 .frame(width: 44, height: 44)
                                 .background(AppTheme.subtleFill, in: RoundedRectangle(cornerRadius: 12))
 
                             VStack(alignment: .leading, spacing: 3) {
                                 Text(currency.displayName)
-                                    .font(.subheadline.weight(.semibold))
+                                    .font(.poppins(.subheadline, weight: .semibold))
                                     .foregroundStyle(.primary)
                                 Text(currency.code)
-                                    .font(.caption)
+                                    .font(.poppins(.caption))
                                     .foregroundStyle(.secondary)
                             }
 
@@ -306,10 +303,10 @@ private struct AddCategorySheet: View {
 
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Category name")
-                        .font(.caption.weight(.semibold))
+                        .font(.poppins(.caption, weight: .semibold))
                         .foregroundStyle(.secondary)
                     TextField("e.g. Pets", text: $categoryName)
-                        .font(.headline)
+                        .font(.poppins(.headline))
                         .textInputAutocapitalization(.words)
                         .focused($isNameFocused)
                         .submitLabel(.done)
@@ -319,7 +316,7 @@ private struct AddCategorySheet: View {
                 }
 
                 VStack(alignment: .leading, spacing: 13) {
-                    DashboardSectionHeader("Symbol", subtitle: "Choose an Apple SF Symbol")
+                    DashboardSectionHeader("Symbol")
 
                     LazyVGrid(
                         columns: [GridItem(.adaptive(minimum: 48), spacing: 11)],
@@ -332,7 +329,7 @@ private struct AddCategorySheet: View {
                                 }
                             } label: {
                                 Image(systemName: symbol)
-                                    .font(.system(size: 16, weight: .semibold))
+                                    .font(.poppins(size: 16, weight: .semibold))
                                     .foregroundStyle(selectedSymbol == symbol ? Color.white : Color.primary)
                                     .frame(width: 48, height: 48)
                                     .background(
@@ -349,7 +346,7 @@ private struct AddCategorySheet: View {
 
                 Button(action: submitCategory) {
                     Text("Add Category")
-                        .font(.headline)
+                        .font(.poppins(.headline))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .frame(height: 52)
