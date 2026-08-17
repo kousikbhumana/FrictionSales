@@ -6,8 +6,17 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		13B67054D91BA37631CB092D /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 756FE090B1B3169926CC99B1 /* FirebaseCrashlytics */; };
+		402CDA071BC0F61D569A5A87 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = DE594FF76071A235AE8E0F31 /* FirebaseAuth */; };
+		56A9529264ECFF6C655B9B41 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 9A8227718579D560304B7350 /* FirebaseCore */; };
+		A2DD54C89121065C43C8237B /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = BF4FA8954B630A2DD03436D5 /* FirebaseFirestore */; };
+		B43E589DF1AFC0A96D2BA071 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 943CE8BFA1BDAB6D1D69AA42 /* GoogleService-Info.plist */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		619D882C302EF87800DAB6B6 /* FrictionSales.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FrictionSales.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		943CE8BFA1BDAB6D1D69AA42 /* GoogleService-Info.plist */ = {isa = PBXFileReference; explicitFileType = text.plist; name = "GoogleService-Info.plist"; path = "FrictionSales/GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -23,6 +32,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				56A9529264ECFF6C655B9B41 /* FirebaseCore in Frameworks */,
+				402CDA071BC0F61D569A5A87 /* FirebaseAuth in Frameworks */,
+				A2DD54C89121065C43C8237B /* FirebaseFirestore in Frameworks */,
+				13B67054D91BA37631CB092D /* FirebaseCrashlytics in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -34,6 +47,7 @@
 			children = (
 				619D882E302EF87800DAB6B6 /* FrictionSales */,
 				619D882D302EF87800DAB6B6 /* Products */,
+				943CE8BFA1BDAB6D1D69AA42 /* GoogleService-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
@@ -55,6 +69,7 @@
 				619D8828302EF87800DAB6B6 /* Sources */,
 				619D8829302EF87800DAB6B6 /* Frameworks */,
 				619D882A302EF87800DAB6B6 /* Resources */,
+				88928BCFDB35E21F7CBE942B /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -65,6 +80,10 @@
 			);
 			name = FrictionSales;
 			packageProductDependencies = (
+				9A8227718579D560304B7350 /* FirebaseCore */,
+				DE594FF76071A235AE8E0F31 /* FirebaseAuth */,
+				BF4FA8954B630A2DD03436D5 /* FirebaseFirestore */,
+				756FE090B1B3169926CC99B1 /* FirebaseCrashlytics */,
 			);
 			productName = FrictionSales;
 			productReference = 619D882C302EF87800DAB6B6 /* FrictionSales.app */;
@@ -94,6 +113,9 @@
 			);
 			mainGroup = 619D8823302EF87800DAB6B6;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				ADEBCB2F54445A292ED211A6 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 619D882D302EF87800DAB6B6 /* Products */;
 			projectDirPath = "";
@@ -109,10 +131,33 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B43E589DF1AFC0A96D2BA071 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		88928BCFDB35E21F7CBE942B /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist",
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist",
+				"$(TARGET_BUILD_DIR)/$(EXECUTABLE_PATH)",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}.debug.dylib",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		619D8828302EF87800DAB6B6 /* Sources */ = {
@@ -159,7 +204,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = D96XTVEQ6H;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -269,6 +314,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = app.FrictionSales;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -304,6 +350,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = app.FrictionSales;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -338,6 +385,40 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		ADEBCB2F54445A292ED211A6 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.8.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		756FE090B1B3169926CC99B1 /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ADEBCB2F54445A292ED211A6 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
+		};
+		9A8227718579D560304B7350 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ADEBCB2F54445A292ED211A6 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		BF4FA8954B630A2DD03436D5 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ADEBCB2F54445A292ED211A6 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		DE594FF76071A235AE8E0F31 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ADEBCB2F54445A292ED211A6 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 619D8824302EF87800DAB6B6 /* Project object */;
 }

@@ -1,207 +1,228 @@
 import SwiftUI
+import FirebaseAuth
 
-/// The profile workspace for user identity, global currency, and expense categories.
 struct ProfileTabView: View {
+    @EnvironmentObject private var authManager: AuthManager
     @EnvironmentObject private var manager: ExpenseManager
-    @State private var draftName = ""
+    
     @State private var isPresentingCurrencyPicker = false
-    @State private var isPresentingNewCategory = false
-    @State private var pendingCategoryDeletion: ExpenseCategory?
-
-    private var canSaveName: Bool {
-        manager.canUpdateProfileName(draftName)
-            && draftName.trimmingCharacters(in: .whitespacesAndNewlines) != manager.profileName
+    @State private var isPresentingDeleteAlert = false
+    @State private var isPresentingResetAlert = false
+    
+    private var displayEmail: String {
+        authManager.user?.email ?? "Not signed in"
     }
-
-    private var profileInitial: String {
-        manager.profileName.trimmingCharacters(in: .whitespacesAndNewlines).first.map(String.init) ?? "P"
-    }
-
+    
     var body: some View {
-        ScrollView {
-            LazyVStack(alignment: .leading, spacing: AppTheme.sectionSpacing) {
-                ScreenTitleView("Profile")
-
-                VStack(spacing: 18) {
-                    Text(profileInitial.uppercased())
-                        .font(.poppins(size: 28, weight: .bold))
-                        .foregroundStyle(.white)
-                        .frame(width: 72, height: 72)
-                        .background(Color.black, in: Circle())
-
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Your name")
-                            .font(.poppins(.caption, weight: .semibold))
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 24) {
+                    
+                    // Header Card
+                    HStack(spacing: 16) {
+                        Image(systemName: "person.crop.circle.fill")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 64, height: 64)
+                            .foregroundStyle(Color(.systemGray3))
+                        
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(manager.profileName)
+                                .font(.poppins(size: 20, weight: .semibold))
+                                .foregroundStyle(.primary)
+                            
+                            Text(displayEmail)
+                                .font(.poppins(size: 14))
+                                .foregroundStyle(.secondary)
+                        }
+                        
+                        Spacer()
+                    }
+                    .padding(20)
+                    .background(Color.white, in: RoundedRectangle(cornerRadius: 16))
+                    .padding(.horizontal, 24)
+                    
+                    // Account Section
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Account")
+                            .font(.poppins(size: 14, weight: .semibold))
                             .foregroundStyle(.secondary)
-
-                        HStack(spacing: 10) {
-                            TextField("Profile name", text: $draftName)
-                                .font(.poppins(.headline))
-                                .textInputAutocapitalization(.words)
-                                .submitLabel(.done)
-                                .onSubmit(saveProfileName)
-
-                            Button("Save", action: saveProfileName)
-                                .font(.poppins(.caption, weight: .bold))
-                                .foregroundStyle(canSaveName ? Color.white : Color.secondary)
-                                .padding(.horizontal, 13)
-                                .frame(minHeight: 38)
-                                .background(canSaveName ? Color.black : AppTheme.subtleFill, in: Capsule())
-                                .disabled(!canSaveName)
-                        }
-                        .padding(.horizontal, 15)
-                        .frame(minHeight: 52)
-                        .background(AppTheme.subtleFill, in: RoundedRectangle(cornerRadius: 15, style: .continuous))
-                    }
-                }
-                .frame(maxWidth: .infinity)
-                .padding(20)
-                .cardSurface()
-
-                VStack(alignment: .leading, spacing: 13) {
-                    DashboardSectionHeader("App settings")
-
-                    Button {
-                        isPresentingCurrencyPicker = true
-                    } label: {
-                        HStack(spacing: 14) {
-                            Text(manager.selectedCurrency.symbol)
-                                .font(.poppins(.title3, weight: .bold))
-                                .frame(width: 46, height: 46)
-                                .background(AppTheme.subtleFill, in: RoundedRectangle(cornerRadius: 13))
-
-                            VStack(alignment: .leading, spacing: 3) {
-                                Text("Currency")
-                                    .font(.poppins(.subheadline, weight: .semibold))
-                                Text("\(manager.selectedCurrency.displayName) · \(manager.currencyCode)")
-                                    .font(.poppins(.caption))
-                                    .foregroundStyle(.secondary)
-                                    .lineLimit(1)
+                            .padding(.horizontal, 24)
+                        
+                        VStack(spacing: 0) {
+                            NavigationLink {
+                                ManageProfileView()
+                            } label: {
+                                ProfileRow(icon: "person.crop.circle", title: "Manage Profile")
                             }
-
-                            Spacer(minLength: 8)
-
-                            Image(systemName: "chevron.right")
-                                .font(.poppins(size: 12, weight: .bold))
-                                .foregroundStyle(.tertiary)
+                            
+                            Divider().padding(.leading, 56)
+                            
+                            NavigationLink {
+                                SecuritySettingsView()
+                            } label: {
+                                ProfileRow(icon: "lock", title: "Password & Security")
+                            }
+                            
+                            Divider().padding(.leading, 56)
+                            
+                            ProfileRow(icon: "bell", title: "Notifications")
                         }
-                        .padding(16)
-                        .cardSurface(radius: AppTheme.compactRadius)
-                        .contentShape(Rectangle())
+                        .background(Color.white, in: RoundedRectangle(cornerRadius: 16))
+                        .padding(.horizontal, 24)
                     }
-                    .buttonStyle(.plain)
-                    .accessibilityHint("Choose an app-wide currency")
-                }
-
-                VStack(alignment: .leading, spacing: 13) {
-                    HStack(alignment: .center, spacing: 12) {
-                        DashboardSectionHeader("Categories")
-                        Spacer(minLength: 8)
-                        Button {
-                            isPresentingNewCategory = true
-                        } label: {
-                            Image(systemName: "plus")
-                                .font(.poppins(size: 13, weight: .bold))
-                                .frame(width: 42, height: 42)
-                                .background(AppTheme.subtleFill, in: Circle())
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityLabel("Add category")
-                    }
-
-                    LazyVGrid(
-                        columns: [GridItem(.adaptive(minimum: 96), spacing: 10)],
-                        spacing: 10
-                    ) {
-                        ForEach(manager.categories) { category in
-                            CategoryManagementTile(category: category) {
-                                pendingCategoryDeletion = category
+                    
+                    // App Settings Section
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("App Settings")
+                            .font(.poppins(size: 14, weight: .semibold))
+                            .foregroundStyle(.secondary)
+                            .padding(.horizontal, 24)
+                        
+                        VStack(spacing: 0) {
+                            Button {
+                                isPresentingCurrencyPicker = true
+                            } label: {
+                                ProfileRow(icon: "dollarsign.circle", title: "Currency", value: manager.selectedCurrency.code)
                             }
                         }
+                        .background(Color.white, in: RoundedRectangle(cornerRadius: 16))
+                        .padding(.horizontal, 24)
                     }
-
-                    Text("Built-in categories stay available. Removing a custom category never deletes its existing expenses.")
-                        .font(.poppins(.caption2))
-                        .foregroundStyle(.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
+                    
+                    // Support Section
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Support")
+                            .font(.poppins(size: 14, weight: .semibold))
+                            .foregroundStyle(.secondary)
+                            .padding(.horizontal, 24)
+                        
+                        VStack(spacing: 0) {
+                            Button {
+                                isPresentingResetAlert = true
+                            } label: {
+                                ProfileRowAction(icon: "arrow.triangle.2.circlepath", title: "Reset App Data", color: .orange)
+                            }
+                            
+                            Divider().padding(.leading, 56)
+                            
+                            Button {
+                                isPresentingDeleteAlert = true
+                            } label: {
+                                ProfileRowAction(icon: "trash", title: "Delete Account", color: .red)
+                            }
+                            
+                            Divider().padding(.leading, 56)
+                            
+                            Button {
+                                do {
+                                    try authManager.signOut()
+                                    manager.resetApp() // clear local data on sign out
+                                } catch {
+                                    print("Error signing out: \(error)")
+                                }
+                            } label: {
+                                ProfileRowAction(icon: "rectangle.portrait.and.arrow.right", title: "Sign Out", color: .red)
+                            }
+                        }
+                        .background(Color.white, in: RoundedRectangle(cornerRadius: 16))
+                        .padding(.horizontal, 24)
+                    }
+                    
+                    Spacer(minLength: 100) // Space for the floating bottom bar
                 }
+                .padding(.top, 16)
             }
-            .padding(.horizontal, AppTheme.pagePadding)
-            .padding(.top, 4)
-            .padding(.bottom, AppTheme.floatingBarClearance)
-        }
-        .scrollDismissesKeyboard(.interactively)
-        .scrollIndicators(.hidden)
-        .background(AppTheme.background)
-        .onAppear { draftName = manager.profileName }
-        .sheet(isPresented: $isPresentingCurrencyPicker) {
-            CurrencyPickerSheet()
-                .environmentObject(manager)
-        }
-        .sheet(isPresented: $isPresentingNewCategory) {
-            AddCategorySheet()
-                .environmentObject(manager)
-        }
-        .confirmationDialog(
-            "Remove custom category?",
-            isPresented: Binding(
-                get: { pendingCategoryDeletion != nil },
-                set: { if !$0 { pendingCategoryDeletion = nil } }
-            ),
-            titleVisibility: .visible,
-            presenting: pendingCategoryDeletion
-        ) { category in
-            Button("Remove \(category.name)", role: .destructive) {
-                manager.deleteCategory(category)
-                pendingCategoryDeletion = nil
+            .background(Color(.systemGroupedBackground).ignoresSafeArea())
+            .navigationTitle("Profile")
+            .navigationBarTitleDisplayMode(.inline)
+            .sheet(isPresented: $isPresentingCurrencyPicker) {
+                CurrencyPickerSheet()
+                    .environmentObject(manager)
             }
-            Button("Cancel", role: .cancel) {
-                pendingCategoryDeletion = nil
+            .alert("Delete Account", isPresented: $isPresentingDeleteAlert) {
+                Button("Cancel", role: .cancel) { }
+                Button("Delete", role: .destructive) {
+                    Task {
+                        do {
+                            manager.resetApp() // Wipe cloud and local
+                            try await authManager.deleteAccount() // Wipe auth
+                        } catch {
+                            print("Error deleting account: \(error)")
+                        }
+                    }
+                }
+            } message: {
+                Text("This will permanently delete your account and all your synced expense data. This action cannot be undone.")
             }
-        } message: { _ in
-            Text("Existing expenses keep their saved category details.")
-        }
-    }
-
-    /// Saves a valid trimmed name and syncs the field to its canonical stored value.
-    private func saveProfileName() {
-        if manager.updateProfileName(draftName) {
-            draftName = manager.profileName
+            .alert("Reset App Data", isPresented: $isPresentingResetAlert) {
+                Button("Cancel", role: .cancel) { }
+                Button("Reset", role: .destructive) {
+                    manager.resetApp()
+                }
+            } message: {
+                Text("This will erase all your local expenses and wipe your cloud backup. Your account will remain active.")
+            }
         }
     }
 }
 
-/// A compact category tile with a delete affordance only for user-created entries.
-private struct CategoryManagementTile: View {
-    let category: ExpenseCategory
-    let deleteAction: () -> Void
-
+/// Reusable row component for the Profile screen
+private struct ProfileRow: View {
+    let icon: String
+    let title: String
+    var value: String? = nil
+    
     var body: some View {
-        VStack(spacing: 9) {
-            ZStack(alignment: .topTrailing) {
-                CategoryIconView(category: category, size: 46)
-
-                if category.isCustom {
-                    Button(action: deleteAction) {
-                        Image(systemName: "minus")
-                            .font(.poppins(size: 8, weight: .bold))
-                            .foregroundStyle(.white)
-                            .frame(width: 18, height: 18)
-                            .background(AppTheme.expenseRed, in: Circle())
-                    }
-                    .offset(x: 7, y: -7)
-                    .accessibilityLabel("Remove \(category.name)")
-                }
+        HStack(spacing: 16) {
+            Image(systemName: icon)
+                .font(.system(size: 20))
+                .foregroundStyle(.primary)
+                .frame(width: 24)
+            
+            Text(title)
+                .font(.poppins(size: 16, weight: .medium))
+                .foregroundStyle(.primary)
+            
+            Spacer()
+            
+            if let value {
+                Text(value)
+                    .font(.poppins(size: 14))
+                    .foregroundStyle(.secondary)
             }
-
-            Text(category.name)
-                .font(.poppins(.caption, weight: .semibold))
-                .lineLimit(1)
-                .minimumScaleFactor(0.75)
+            
+            Image(systemName: "chevron.right")
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundStyle(Color(.systemGray3))
         }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 14)
-        .cardSurface(radius: AppTheme.compactRadius)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 16)
+        .contentShape(Rectangle())
+    }
+}
+
+private struct ProfileRowAction: View {
+    let icon: String
+    let title: String
+    let color: Color
+    
+    var body: some View {
+        HStack(spacing: 16) {
+            Image(systemName: icon)
+                .font(.system(size: 20))
+                .foregroundStyle(color)
+                .frame(width: 24)
+            
+            Text(title)
+                .font(.poppins(size: 16, weight: .medium))
+                .foregroundStyle(color)
+            
+            Spacer()
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 16)
+        .contentShape(Rectangle())
     }
 }
 
@@ -224,7 +245,10 @@ private struct CurrencyPickerSheet: View {
     var body: some View {
         ScrollView {
             LazyVStack(spacing: 12) {
-                SheetHeaderView(title: "Choose Currency") { dismiss() }
+                Text("Choose Currency")
+                    .font(.poppins(size: 20, weight: .bold))
+                    .padding(.top, 24)
+                    .padding(.bottom, 8)
 
                 HStack(spacing: 10) {
                     Image(systemName: "magnifyingglass")
@@ -236,7 +260,7 @@ private struct CurrencyPickerSheet: View {
                 }
                 .padding(.horizontal, 15)
                 .frame(minHeight: 46)
-                .cardSurface(radius: AppTheme.compactRadius)
+                .background(Color(.systemGray6), in: RoundedRectangle(cornerRadius: 12))
 
                 ForEach(filteredCurrencies) { currency in
                     Button {
@@ -247,7 +271,7 @@ private struct CurrencyPickerSheet: View {
                             Text(currency.symbol)
                                 .font(.poppins(.headline))
                                 .frame(width: 44, height: 44)
-                                .background(AppTheme.subtleFill, in: RoundedRectangle(cornerRadius: 12))
+                                .background(Color(.systemGray6), in: RoundedRectangle(cornerRadius: 12))
 
                             VStack(alignment: .leading, spacing: 3) {
                                 Text(currency.displayName)
@@ -266,7 +290,7 @@ private struct CurrencyPickerSheet: View {
                             }
                         }
                         .padding(14)
-                        .cardSurface(radius: AppTheme.compactRadius)
+                        .background(Color.white, in: RoundedRectangle(cornerRadius: 12))
                         .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
@@ -276,106 +300,15 @@ private struct CurrencyPickerSheet: View {
         }
         .scrollDismissesKeyboard(.interactively)
         .scrollIndicators(.hidden)
-        .background(AppTheme.background)
+        .background(Color(.systemGroupedBackground))
         .presentationDetents([.large])
-        .presentationDragIndicator(.hidden)
+        .presentationDragIndicator(.visible)
         .presentationCornerRadius(34)
-        .presentationBackground(AppTheme.background)
     }
 }
 
-/// A validated form for adding a named category backed by an approved SF Symbol.
-private struct AddCategorySheet: View {
-    @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject private var manager: ExpenseManager
-    @State private var categoryName = ""
-    @State private var selectedSymbol = "fork.knife"
-    @FocusState private var isNameFocused: Bool
-
-    private var canSubmit: Bool {
-        manager.canAddCategory(name: categoryName, symbol: selectedSymbol)
-    }
-
-    var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 22) {
-                SheetHeaderView(title: "New Category") { dismiss() }
-
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Category name")
-                        .font(.poppins(.caption, weight: .semibold))
-                        .foregroundStyle(.secondary)
-                    TextField("e.g. Pets", text: $categoryName)
-                        .font(.poppins(.headline))
-                        .textInputAutocapitalization(.words)
-                        .focused($isNameFocused)
-                        .submitLabel(.done)
-                        .padding(.horizontal, 16)
-                        .frame(minHeight: 52)
-                        .cardSurface(radius: AppTheme.compactRadius)
-                }
-
-                VStack(alignment: .leading, spacing: 13) {
-                    DashboardSectionHeader("Symbol")
-
-                    LazyVGrid(
-                        columns: [GridItem(.adaptive(minimum: 48), spacing: 11)],
-                        spacing: 11
-                    ) {
-                        ForEach(ExpenseManager.availableCategorySymbols, id: \.self) { symbol in
-                            Button {
-                                withAnimation(.snappy(duration: 0.18)) {
-                                    selectedSymbol = symbol
-                                }
-                            } label: {
-                                Image(systemName: symbol)
-                                    .font(.poppins(size: 16, weight: .semibold))
-                                    .foregroundStyle(selectedSymbol == symbol ? Color.white : Color.primary)
-                                    .frame(width: 48, height: 48)
-                                    .background(
-                                        selectedSymbol == symbol ? Color.black : AppTheme.subtleFill,
-                                        in: RoundedRectangle(cornerRadius: 14)
-                                    )
-                            }
-                            .buttonStyle(.plain)
-                            .accessibilityLabel(symbol)
-                            .accessibilityAddTraits(selectedSymbol == symbol ? .isSelected : [])
-                        }
-                    }
-                }
-
-                Button(action: submitCategory) {
-                    Text("Add Category")
-                        .font(.poppins(.headline))
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 52)
-                        .background(Color.black, in: Capsule())
-                }
-                .disabled(!canSubmit)
-                .opacity(canSubmit ? 1 : 0.35)
-            }
-            .padding(20)
-        }
-        .scrollDismissesKeyboard(.interactively)
-        .scrollIndicators(.hidden)
-        .background(AppTheme.background)
-        .presentationDetents([.large])
-        .presentationDragIndicator(.hidden)
-        .presentationCornerRadius(34)
-        .presentationBackground(AppTheme.background)
-    }
-
-    /// Adds the category only after manager-level name and symbol validation succeeds.
-    private func submitCategory() {
-        if manager.addCategory(name: categoryName, symbol: selectedSymbol) {
-            dismiss()
-        }
-    }
-}
-
-#Preview("Profile") {
+#Preview {
     ProfileTabView()
+        .environmentObject(AuthManager())
         .environmentObject(ExpenseManager.previewPopulated)
-        .preferredColorScheme(.light)
 }

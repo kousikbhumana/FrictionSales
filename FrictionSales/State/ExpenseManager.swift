@@ -1,5 +1,7 @@
 import Combine
 import Foundation
+import FirebaseFirestore
+import FirebaseAuth
 
 /// Owns shared expense, category, profile, currency, and persistence state for the app.
 final class ExpenseManager: ObservableObject {
@@ -226,7 +228,7 @@ final class ExpenseManager: ObservableObject {
         value.split(whereSeparator: { $0.isWhitespace }).joined(separator: " ")
     }
 
-    /// Persists one compact JSON state snapshot after each successful mutation.
+    /// Persists one compact JSON state snapshot locally and syncs to Firebase.
     private func persist() {
         guard let storage else { return }
         let state = PersistedState(
@@ -237,6 +239,71 @@ final class ExpenseManager: ObservableObject {
         )
         guard let data = try? JSONEncoder().encode(state) else { return }
         storage.set(data, forKey: Self.storageKey)
+        
+        // Sync to Firebase in the background
+        syncToFirebase(state: state)
+    }
+    
+    // MARK: - Firebase Sync
+    
+    /// Uploads the current snapshot to Firestore under the user's UID
+    private func syncToFirebase(state: PersistedState) {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        
+        // Convert to dictionary for Firestore
+        guard let data = try? JSONEncoder().encode(state),
+              let dict = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any] else { return }
+        
+        Firestore.firestore().collection("users").document(uid).setData(dict) { error in
+            if let error = error {
+                print("Error syncing to Firebase: \(error.localizedDescription)")
+            } else {
+                print("Successfully synced to Firebase")
+            }
+        }
+    }
+    
+    /// Fetches the user's snapshot from Firestore and overwrites local data
+    func fetchFromFirebase() async {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        
+        do {
+            let document = try await Firestore.firestore().collection("users").document(uid).getDocument()
+            if let data = document.data() {
+                // Convert dict back to PersistedState
+                let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
+                let state = try JSONDecoder().decode(PersistedState.self, from: jsonData)
+                
+                await MainActor.run {
+                    self.categories = state.categories.isEmpty ? ExpenseManager.defaultCategories : state.categories
+                    self.transactions = state.transactions.sorted { $0.date > $1.date }
+                    self.profileName = state.profileName
+                    self.currencyCode = CurrencyOption.option(for: state.currencyCode).code
+                    // Save locally too
+                    if let encoded = try? JSONEncoder().encode(state) {
+                        self.storage?.set(encoded, forKey: Self.storageKey)
+                    }
+                }
+            }
+        } catch {
+            print("Error fetching from Firebase: \(error.localizedDescription)")
+        }
+    }
+    
+    /// Completely erases all local data and deletes the cloud document
+    func resetApp() {
+        storage?.removeObject(forKey: Self.storageKey)
+        
+        // Reset local state to default
+        self.categories = ExpenseManager.defaultCategories
+        self.transactions = []
+        self.profileName = "My Profile"
+        self.currencyCode = "USD"
+        
+        // Wipe cloud data
+        if let uid = Auth.auth().currentUser?.uid {
+            Firestore.firestore().collection("users").document(uid).delete()
+        }
     }
 }
 
