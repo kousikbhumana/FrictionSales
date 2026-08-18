@@ -3,6 +3,7 @@
 ## Agent Directives & Skills
 - This file (`AGENTS.md`) defines the core rules and architectural guidelines for this app.
 - For strict implementation rules, coding practices, and protected code behavior, you MUST read and follow `SKILLS.md` before making any modifications to this project.
+- Whenever a new task is assigned, you MUST go through `MEMORY.md` along with all other files and follow the instructions given in `MEMORY.md`. This file contains the user's personal preferences and dynamically updated self-learned rules.
 ## Project Identity
 
 App name: FrictionSales  
