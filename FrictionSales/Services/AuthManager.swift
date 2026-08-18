@@ -58,8 +58,8 @@ class AuthManager: ObservableObject {
             throw NSError(domain: "AuthError", code: 0, userInfo: [NSLocalizedDescriptionKey: "No signed-in user found."])
         }
         do {
-            try await user.updateEmail(to: newEmail)
-            print("Successfully updated email")
+            try await user.sendEmailVerification(beforeUpdatingEmail: newEmail)
+            print("Successfully requested email update verification")
         } catch {
             print("Error updating email: \(error.localizedDescription)")
             throw error
