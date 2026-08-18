@@ -1,5 +1,8 @@
 # AGENTS.md — FrictionSales iOS App Rules
 
+## Agent Directives & Skills
+- This file (`AGENTS.md`) defines the core rules and architectural guidelines for this app.
+- For strict implementation rules, coding practices, and protected code behavior, you MUST read and follow `SKILLS.md` before making any modifications to this project.
 ## Project Identity
 
 App name: FrictionSales  
