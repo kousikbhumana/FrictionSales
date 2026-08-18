@@ -180,6 +180,7 @@ struct ExpenseRowView: View {
             VStack(alignment: .leading, spacing: 3) {
                 Text(amountText)
                     .font(.poppins(.headline, weight: .bold))
+                    .foregroundStyle(.black)
                     .lineLimit(1)
                     .minimumScaleFactor(0.72)
                 Text(transaction.category.name)
@@ -218,6 +219,7 @@ struct DailyExpenseTotalCard: View {
 
             Text(amountText)
                 .font(.poppins(.largeTitle, weight: .bold))
+                .foregroundStyle(.black)
                 .minimumScaleFactor(0.62)
                 .lineLimit(1)
 
@@ -280,6 +282,7 @@ struct StatCardView: View {
             VStack(alignment: .leading, spacing: 3) {
                 Text(value)
                     .font(.poppins(.title3, weight: .bold))
+                    .foregroundStyle(.black)
                     .contentTransition(.numericText())
                     .minimumScaleFactor(0.62)
                     .lineLimit(1)
@@ -328,6 +331,7 @@ struct CategoryPerformanceRowView: View {
 
             Text(amountText)
                 .font(.poppins(.subheadline, weight: .bold))
+                .foregroundStyle(.black)
                 .lineLimit(1)
                 .minimumScaleFactor(0.68)
         }
@@ -365,6 +369,7 @@ struct PeakSpendCardView: View {
             VStack(alignment: .trailing, spacing: 4) {
                 Text(amountText)
                     .font(.poppins(.subheadline, weight: .bold))
+                    .foregroundStyle(.black)
                     .lineLimit(1)
                     .minimumScaleFactor(0.68)
                 Text("\(record.expenseCount) \(record.expenseCount == 1 ? "spend" : "spends")")
@@ -402,6 +407,7 @@ struct MetricPairCardView: View {
             VStack(alignment: .leading, spacing: 5) {
                 Text(amountText)
                     .font(.poppins(.title2, weight: .bold))
+                    .foregroundStyle(.black)
                     .minimumScaleFactor(0.62)
                     .lineLimit(1)
                 Text(amountTitle)

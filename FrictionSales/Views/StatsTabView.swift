@@ -9,6 +9,7 @@ struct StatsTabView: View {
     @State private var customStartDate = Calendar.current.date(byAdding: .day, value: -7, to: .now) ?? .now
     @State private var customEndDate = Date.now
     @State private var isShowingProMessage = false
+    @State private var isShowingTotalSpends = false
 
     private let analytics: any ExpenseAnalyticsService = LocalExpenseAnalyticsEngine()
 
@@ -55,6 +56,10 @@ struct StatsTabView: View {
         } message: {
             Text("A future update will add forecasts, patterns, and personalized spending guidance.")
         }
+        .sheet(isPresented: $isShowingTotalSpends) {
+            TotalSpendsSheet()
+                .environmentObject(manager)
+        }
     }
 
     private var overviewContent: some View {
@@ -62,12 +67,17 @@ struct StatsTabView: View {
             VStack(alignment: .leading, spacing: 13) {
                 DashboardSectionHeader("Overview")
 
-                StatCardView(
-                    title: "Total spent",
-                    value: manager.formattedCurrency(lifetimeSummary.totalSpent),
-                    symbol: "creditcard.fill",
-                    detail: "All time"
-                )
+                Button {
+                    isShowingTotalSpends = true
+                } label: {
+                    StatCardView(
+                        title: "Total spent",
+                        value: manager.formattedCurrency(lifetimeSummary.totalSpent),
+                        symbol: "creditcard.fill",
+                        detail: "All time"
+                    )
+                }
+                .buttonStyle(.plain)
 
                 AdaptivePairView {
                     StatCardView(
@@ -434,6 +444,48 @@ private struct CustomExpenseDateRangeView: View {
         }
         .padding(16)
         .cardSurface(radius: AppTheme.compactRadius)
+    }
+}
+
+/// A bottom-up sheet displaying all transactions across all time, sorted from highest to lowest.
+private struct TotalSpendsSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var manager: ExpenseManager
+
+    private var sortedTransactions: [ExpenseTransaction] {
+        manager.transactions.sorted { $0.amount > $1.amount }
+    }
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 22) {
+                SheetHeaderView(title: "Highest Spends") { dismiss() }
+
+                if sortedTransactions.isEmpty {
+                    EmptyStateView(
+                        symbol: "chart.bar.xaxis",
+                        title: "No expenses yet",
+                        message: "Your expenses will be listed here from highest to lowest."
+                    )
+                } else {
+                    LazyVStack(spacing: 12) {
+                        ForEach(sortedTransactions) { transaction in
+                            ExpenseRowView(
+                                transaction: transaction,
+                                amountText: manager.formattedCurrency(transaction.amount)
+                            )
+                        }
+                    }
+                }
+            }
+            .padding(20)
+        }
+        .scrollIndicators(.hidden)
+        .background(AppTheme.background)
+        .presentationDetents([.medium, .large])
+        .presentationDragIndicator(.hidden)
+        .presentationCornerRadius(22)
+        .presentationBackground(AppTheme.background)
     }
 }
 

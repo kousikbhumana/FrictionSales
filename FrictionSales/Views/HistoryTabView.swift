@@ -292,6 +292,7 @@ private struct CategoryDetailsSheet: View {
                         VStack(alignment: .leading, spacing: 5) {
                             Text(manager.formattedCurrency(summary.totalSpent))
                                 .font(.poppins(.title2, weight: .bold))
+                                .foregroundStyle(.black)
                                 .minimumScaleFactor(0.62)
                                 .lineLimit(1)
                             Text("Lifetime spent")
@@ -418,6 +419,7 @@ private struct TopSpendsChartView: View {
                         Spacer()
                         Text(manager.formattedCurrency(tx.amount))
                             .font(.poppins(.subheadline, weight: .semibold))
+                            .foregroundStyle(.black)
                     }
                     .padding(.vertical, 12)
                     
@@ -477,7 +479,7 @@ private struct MonthlySpendingRow: View {
 
             Text(amountText)
                 .font(.poppins(.subheadline, weight: .bold))
-                .foregroundStyle(month.position == .highest || month.position == .least ? accent : .primary)
+                .foregroundStyle(month.position == .highest || month.position == .least ? accent : .black)
                 .lineLimit(1)
                 .minimumScaleFactor(0.68)
         }
