@@ -107,15 +107,15 @@ Before finishing any coding task:
 
 ## App Design Direction
 
-The UI should closely follow the attached reference screenshots:
+The UI must strictly follow the new reference design (warm, minimal, light-mode only):
 
-- Premium iOS dashboard style.
-- Clean cards.
-- Rounded corners.
-- Modern spacing.
-- Showroom/business analytics feel.
-- Native Apple visual language.
-- Clear typography hierarchy.
+- **Background Color**: Warm cream/off-white (e.g., `#F8F6F0` or a similar custom color). Avoid standard `systemGroupedBackground`.
+- **Card Style**: White or lighter cream cards with soft rounded corners.
+- **Tab Bar**: Custom minimal tab bar with a prominent black circular action button (like a `+`) in the center. Active icons in black, inactive in gray.
+- **Buttons**: Solid black pill-shaped buttons with white text for primary actions.
+- **Typography**: Clean, modern hierarchy. Primary text in dark gray/black, secondary text in medium gray. Use bold warm orange accents for key highlights.
+- **Strict Light Mode**: The app must only support Light Mode.
+- Premium iOS dashboard style with modern spacing.
 - Professional, minimal, high-trust interface.
 
 Do not create a childish or toy-like UI. This is an internal business tool for a real electric bike showroom.

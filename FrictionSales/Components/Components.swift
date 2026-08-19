@@ -56,7 +56,7 @@ enum AppTheme {
     static let compactRadius: CGFloat = 11
     static let floatingBarClearance: CGFloat = 92
 
-    static let background = Color(red: 0.965, green: 0.965, blue: 0.985)
+    static let background = Color(red: 0.972, green: 0.965, blue: 0.941)
     static let elevatedSurface = Color.white
     static let subtleFill = Color.black.opacity(0.055)
     static let border = Color.black.opacity(0.055)

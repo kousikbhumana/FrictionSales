@@ -50,7 +50,7 @@ struct ManageProfileView: View {
             }
             .padding(24)
         }
-        .background(Color(.systemGroupedBackground).ignoresSafeArea())
+        .background(AppTheme.background.ignoresSafeArea())
         .navigationTitle("Manage Profile")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {

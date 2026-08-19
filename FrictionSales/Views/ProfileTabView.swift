@@ -133,7 +133,7 @@ struct ProfileTabView: View {
                 }
                 .padding(.top, 16)
             }
-            .background(Color(.systemGroupedBackground).ignoresSafeArea())
+            .background(AppTheme.background.ignoresSafeArea())
             .navigationTitle("Profile")
             .navigationBarTitleDisplayMode(.inline)
             .sheet(isPresented: $isPresentingCurrencyPicker) {
@@ -300,7 +300,7 @@ private struct CurrencyPickerSheet: View {
         }
         .scrollDismissesKeyboard(.interactively)
         .scrollIndicators(.hidden)
-        .background(Color(.systemGroupedBackground))
+        .background(AppTheme.background)
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
         .presentationCornerRadius(34)

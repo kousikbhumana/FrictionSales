@@ -65,7 +65,7 @@ private enum AppTab: Hashable, CaseIterable {
     }
 }
 
-/// A single black capsule with a large white add control centered between four destinations.
+/// A single white capsule with a large black add control centered between four destinations.
 private struct FloatingExpenseTabBar: View {
     @Binding var selection: AppTab
     let addAction: () -> Void
@@ -78,10 +78,10 @@ private struct FloatingExpenseTabBar: View {
             Button(action: addAction) {
                 Image(systemName: "plus")
                     .font(.poppins(size: 19, weight: .bold))
-                    .foregroundStyle(.black)
+                    .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .frame(height: 48)
-                    .background(Color.white, in: Capsule())
+                    .background(Color.black, in: Capsule())
             }
             .frame(maxWidth: 78)
             .accessibilityLabel("Add expense")
@@ -91,11 +91,11 @@ private struct FloatingExpenseTabBar: View {
         }
         .padding(6)
         .frame(maxWidth: 350)
-        .background(Color.black, in: Capsule())
+        .background(Color.white, in: Capsule())
         .overlay {
-            Capsule().stroke(Color.white.opacity(0.12), lineWidth: 1)
+            Capsule().stroke(Color.black.opacity(0.05), lineWidth: 1)
         }
-        .shadow(color: .black.opacity(0.22), radius: 18, x: 0, y: 9)
+        .shadow(color: .black.opacity(0.06), radius: 18, x: 0, y: 9)
         .frame(maxWidth: .infinity)
     }
 
@@ -109,13 +109,13 @@ private struct FloatingExpenseTabBar: View {
             Image(systemName: tab.symbol)
                 .font(.poppins(size: 15, weight: .semibold))
                 .symbolRenderingMode(.monochrome)
-                .foregroundStyle(selection == tab ? Color.white : Color.white.opacity(0.48))
+                .foregroundStyle(selection == tab ? Color.black : Color.black.opacity(0.48))
                 .frame(maxWidth: .infinity)
                 .frame(height: 48)
                 .background {
                     if selection == tab {
                         Circle()
-                            .fill(Color.white.opacity(0.15))
+                            .fill(Color.black.opacity(0.05))
                             .frame(width: 40, height: 40)
                     }
                 }

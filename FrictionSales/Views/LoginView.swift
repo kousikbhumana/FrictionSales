@@ -102,7 +102,7 @@ struct LoginView: View {
                 }
                 .frame(maxWidth: .infinity)
                 .frame(height: 56)
-                .background(Color(uiColor: .darkGray), in: RoundedRectangle(cornerRadius: 28))
+                .background(Color.black, in: Capsule())
                 .foregroundStyle(.white)
                 .disabled(isLoading || !canSubmit)
                 .padding(.top, 8)
@@ -151,7 +151,7 @@ struct LoginView: View {
             }
             .padding(24)
         }
-        .background(Color.white.ignoresSafeArea())
+        .background(AppTheme.background.ignoresSafeArea())
     }
     
     private var canSubmit: Bool {
