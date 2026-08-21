@@ -11,12 +11,12 @@
 		402CDA071BC0F61D569A5A87 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = DE594FF76071A235AE8E0F31 /* FirebaseAuth */; };
 		56A9529264ECFF6C655B9B41 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 9A8227718579D560304B7350 /* FirebaseCore */; };
 		A2DD54C89121065C43C8237B /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = BF4FA8954B630A2DD03436D5 /* FirebaseFirestore */; };
-		B43E589DF1AFC0A96D2BA071 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 943CE8BFA1BDAB6D1D69AA42 /* GoogleService-Info.plist */; };
+		A3E12553ED7181DD520F5CAC /* FirebasePerformance in Frameworks */ = {isa = PBXBuildFile; productRef = DFE285215C6055336EB6544E /* FirebasePerformance */; };
+		B02E3CF189D662877B48C0F3 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 30C7BD0217FE29C9C7D41C4D /* FirebaseAnalytics */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		619D882C302EF87800DAB6B6 /* FrictionSales.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FrictionSales.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		943CE8BFA1BDAB6D1D69AA42 /* GoogleService-Info.plist */ = {isa = PBXFileReference; explicitFileType = text.plist; name = "GoogleService-Info.plist"; path = "FrictionSales/GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -36,6 +36,8 @@
 				402CDA071BC0F61D569A5A87 /* FirebaseAuth in Frameworks */,
 				A2DD54C89121065C43C8237B /* FirebaseFirestore in Frameworks */,
 				13B67054D91BA37631CB092D /* FirebaseCrashlytics in Frameworks */,
+				A3E12553ED7181DD520F5CAC /* FirebasePerformance in Frameworks */,
+				B02E3CF189D662877B48C0F3 /* FirebaseAnalytics in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -47,7 +49,6 @@
 			children = (
 				619D882E302EF87800DAB6B6 /* FrictionSales */,
 				619D882D302EF87800DAB6B6 /* Products */,
-				943CE8BFA1BDAB6D1D69AA42 /* GoogleService-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
@@ -84,6 +85,8 @@
 				DE594FF76071A235AE8E0F31 /* FirebaseAuth */,
 				BF4FA8954B630A2DD03436D5 /* FirebaseFirestore */,
 				756FE090B1B3169926CC99B1 /* FirebaseCrashlytics */,
+				DFE285215C6055336EB6544E /* FirebasePerformance */,
+				30C7BD0217FE29C9C7D41C4D /* FirebaseAnalytics */,
 			);
 			productName = FrictionSales;
 			productReference = 619D882C302EF87800DAB6B6 /* FrictionSales.app */;
@@ -131,7 +134,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B43E589DF1AFC0A96D2BA071 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -398,6 +400,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		30C7BD0217FE29C9C7D41C4D /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ADEBCB2F54445A292ED211A6 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
 		756FE090B1B3169926CC99B1 /* FirebaseCrashlytics */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = ADEBCB2F54445A292ED211A6 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
@@ -417,6 +424,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = ADEBCB2F54445A292ED211A6 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseAuth;
+		};
+		DFE285215C6055336EB6544E /* FirebasePerformance */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ADEBCB2F54445A292ED211A6 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebasePerformance;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
